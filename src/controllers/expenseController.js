@@ -9,7 +9,7 @@ exports.addExpense = async (req, res) => {
     const expense = await newExpense.save();
     res.json(expense);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -19,7 +19,7 @@ exports.getAllExpenses = async (req, res) => {
     const expenses = await Expense.find();
     res.json(expenses);
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -30,7 +30,7 @@ exports.deleteExpense = async (req, res) => {
     if (!expense) return res.status(404).json({ message: 'Expense not found' });
     res.json({ message: 'Expense deleted' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error' });
+    res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
 
@@ -47,7 +47,7 @@ exports.updateExpense = async (req, res) => {
       expense = await expense.save();
       res.json(expense);
     } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
 
@@ -74,7 +74,7 @@ exports.getMonthlyExpenseSummary = async (req, res) => {
       ]);
       res.json(expenses[0] || { totalExpenses: 0 });
     } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
 
@@ -86,7 +86,32 @@ exports.getExpensesByDateRange = async (req, res) => {
       });
       res.json(expenses);
     } catch (error) {
-      res.status(500).json({ message: 'Server error' });
+        res.status(500).json({ message: 'Server error', error: error.message });
     }
   };
   
+  exports.getWeeklyExpenses = async (req, res) => {
+    const { year } = req.params; // We'll get the year from the request parameters
+    try {
+      const expenses = await Expense.aggregate([
+        {
+          $match: {
+            $expr: { $eq: [{ $year: '$date' }, Number(year)] },
+          },
+        },
+        {
+          $group: {
+            _id: { week: { $isoWeek: '$date' } },
+            totalExpenses: { $sum: '$amount' },
+            expenses: { $push: { description: '$description', amount: '$amount', date: '$date', category: '$category' } }
+          },
+        },
+        {
+          $sort: { '_id.week': 1 },
+        },
+      ]);
+      res.json(expenses);
+    } catch (error) {
+      res.status(500).json({ message: 'Server error', error: error.message });
+    }
+  };

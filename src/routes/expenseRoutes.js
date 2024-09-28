@@ -8,5 +8,6 @@ router.put('/:id', expenseController.updateExpense);
 router.get('/summary/:year/:month', expenseController.getMonthlyExpenseSummary);
 router.delete('/:id', expenseController.deleteExpense);
 router.get('/daterange', expenseController.getExpensesByDateRange);
+router.get('/weekly/:year', expenseController.getWeeklyExpenses);
 
 module.exports = router;
