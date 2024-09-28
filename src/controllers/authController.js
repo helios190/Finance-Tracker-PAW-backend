@@ -9,10 +9,7 @@ exports.register = async (req, res) => {
     const user = new User({ username, email, password });
     await user.save();
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
-    });
-    res.json({ token });
+    res.status(200).json({message: `Users ${username} succesfully created`})
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
@@ -29,9 +26,14 @@ exports.login = async (req, res) => {
     if (!isMatch) return res.status(400).json({ message: 'Invalid password' });
 
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+      expiresIn: '24h',
     });
-    res.json({ token });
+    res.json({
+      token,
+      id:user._id,
+      username: user.username,
+      email: user.email
+    });
   } catch (error) {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
