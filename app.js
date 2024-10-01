@@ -26,8 +26,8 @@ app.use(cors({
 app.use(express.json());
 
 // Routes
-app.use('/api/income', require('./src/routes/expenseRoutes'));
-app.use('/api/expenses', require('./src/routes/incomeRoutes'));
+app.use('/api/income', require('./src/routes/incomeRoutes'));
+app.use('/api/expenses', require('./src/routes/expenseRoutes'));
 app.use('/api/users', require('./src/routes/userRoutes')); 
 app.use('/api/financial',require('./src/routes/financialRoutes'))
 

@@ -92,32 +92,45 @@ exports.updateIncome = async (req, res) => {
 //     }
 //   };
   
-  exports.getIncomeByDateRange = async (req, res) => {
-    const { startDate, endDate } = req.query;
-    try {
-        const income = await Income.aggregate([
-            {
-                $match: {
-                    date: { $gte: new Date(startDate), $lte: new Date(endDate) },
-                }
-            },
-            {
-                $group: {
-                    _id: "$category",
-                    totalAmount: { $sum: "$amount" },
-                    count: { $sum: 1 }
-                }
-            },
-            {
-                $sort: { totalAmount: -1 } // Sort by total amount in descending order
-            }
-        ]);
+exports.getIncomeByDateRange = async (req, res) => {
+  const { startDate, endDate } = req.query;
+  console.log('Received startDate:', startDate);
+  console.log('Received endDate:', endDate);
 
-        res.json(income);
-    } catch (error) {
-        res.status(500).json({ message: 'Server error', error: error.message });
-    }
+  // Validate date formats
+  if (!startDate || isNaN(Date.parse(startDate)) || !endDate || isNaN(Date.parse(endDate))) {
+      return res.status(400).json({ message: 'Invalid date format. Please use YYYY-MM-DD format.' });
+  }
+
+  try {
+      const income = await Income.aggregate([
+          {
+              $match: {
+                  date: { $gte: new Date(startDate), $lte: new Date(endDate) },
+              }
+          },
+          {
+              $group: {
+                  _id: "$category",
+                  totalAmount: { $sum: "$amount" },
+                  count: { $sum: 1 }
+              }
+          },
+          {
+              $sort: { totalAmount: -1 } // Sort by total amount in descending order
+          }
+      ]);
+
+      // Log the result to see if any data was fetched
+      console.log('Income Data:', income);
+
+      res.json(income);
+  } catch (error) {
+      console.error('Error:', error.message); // Log the error
+      res.status(500).json({ message: 'Server error', error: error.message });
+  }
 };
+
 
 exports.getWeeklyIncomes = async (req, res) => {
   const { year } = req.params;
