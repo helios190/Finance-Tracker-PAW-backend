@@ -1,0 +1,3 @@
+[submodule "Finance-Tracker-PAW-Frontend"]
+	path = Finance-Tracker-PAW-Frontend
+	url = https://github.com/adzkiakhns/Finance-Tracker-PAW-Frontend.git
