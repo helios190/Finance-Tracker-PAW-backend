@@ -1,4 +1,5 @@
 const Income = require('../models/income');
+const User = require('../models/profile');
 
 // Add a new income
 exports.addIncome = async (req, res) => {
@@ -11,6 +12,31 @@ exports.addIncome = async (req, res) => {
     res.status(500).json({ message: 'Server error', error: error.message });
   }
 };
+
+
+exports.getBalanceWithIncome = async (req, res) => {
+  try {
+    const { userId } = req.params;
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const totalIncome = await Income.aggregate([
+      { $match: { userId: user._id } }, 
+      { $group: { _id: null, totalAmount: { $sum: '$amount' } } } 
+    ]);
+    const totalIncomeAmount = totalIncome.length > 0 ? totalIncome[0].totalAmount : 0;
+    res.json({
+      userId: user._id,
+      balance: user.balance,
+      totalIncome: totalIncomeAmount
+    });
+  } catch (error) {
+    console.error('Error getting balance and income:', error.message);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+};
+
 
 // Get all income entries
 exports.getAllIncome = async (req, res) => {

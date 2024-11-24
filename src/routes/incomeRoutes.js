@@ -9,5 +9,6 @@ router.get('/summary/:year/:month', incomeController.getMonthlyIncomeSummary);
 router.get('/daterange', incomeController.getIncomeByDateRange);
 router.delete('/:id', incomeController.deleteIncome);
 router.get('/weekly/:year', incomeController.getWeeklyIncomes);
+router.get('/:userId/balance-with-income', incomeController.getBalanceWithIncome);
 
 module.exports = router;
