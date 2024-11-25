@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 
 const ExpenseSchema = new mongoose.Schema({
-  description: {
+  source: {
     type: String,
     required: true,
   },
@@ -16,6 +16,11 @@ const ExpenseSchema = new mongoose.Schema({
   date: {
     type: Date,
     default: Date.now,
+  },
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User',  // This references the User model
+    required: true,
   },
 });
 
