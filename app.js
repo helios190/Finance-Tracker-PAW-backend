@@ -8,7 +8,7 @@ const app = express();
 // Connect to MongoDB
 connectDB();
 
-const allowedOrigins = ['http://localhost:3000','https://finance-tracker-paw-frontend.vercel.app/'];
+const allowedOrigins = ['http://localhost:3000','https://finance-tracker-paw-frontend.vercel.app'];
 
 app.use(cors({
   origin: function (origin, callback) {
